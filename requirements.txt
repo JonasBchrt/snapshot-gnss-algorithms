@@ -1,0 +1,6 @@
+matplotlib
+numpy
+pymap3d
+scipy
+Shapely
+sklearn
