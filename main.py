@@ -773,14 +773,14 @@ Valid arguments for <mode> if experiment=4:
     print()
 
     # Plot CDF
-    # cdf(all_error)
+    cdf(all_error)
 
-    # plt.xlim(0, 200)
-    # plt.ylim(0, 1)
-    # plt.grid()
-    # plt.yticks(np.linspace(0, 1, 11))
-    # plt.xlabel("horizontal error [m]")
-    # plt.title(f"Experiment {experiment}, {mode}")
-    # plt.grid(True)
+    plt.xlim(0, 200)
+    plt.ylim(0, 1)
+    plt.grid()
+    plt.yticks(np.linspace(0, 1, 11))
+    plt.xlabel("horizontal error [m]")
+    plt.title(f"Experiment {experiment}, {mode}")
+    plt.grid(True)
 
-    # plt.show()
+    plt.show()
