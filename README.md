@@ -30,7 +30,7 @@ cd snapshot-gnss-algorithms
 
 Experiments 1-3 are based on our data collection
 
-> Jonas Beuchert and Alex Rogers. 2021. SnapperGPS: Collection of GNSS Signal Snapshots. University of Oxford, Oxford, UK.
+> Jonas Beuchert and Alex Rogers. 2021. SnapperGPS: Collection of GNSS Signal Snapshots. University of Oxford, Oxford, UK. https://doi.org/10.5287/bodleian:eXrp1xydM.
 
 Download the data into a sub-directory called `data` such that the file structure is
 
