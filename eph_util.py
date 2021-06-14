@@ -2961,7 +2961,7 @@ def acquisition_simplified(signals, utc, pos_geo, rinex_file=None, eph=None,
         raise Exception(
             "'eph' must be a 2D NumPy array."
             )
-    if eph.shape[0] != 21:
+    if eph is not None and eph.shape[0] != 21:
         raise Exception(
             "'eph' must have 21 rows, i.e., its first dimension must have size 21."
             )
@@ -3086,9 +3086,14 @@ def acquisition_simplified(signals, utc, pos_geo, rinex_file=None, eph=None,
     sample = int(sampling_frequency * code_period)
     sample_idx = np.arange(1, sample + 1)
 
+    if np.isscalar(intermediate_frequency):
+        intermediate_frequency_f = intermediate_frequency
+    else:
+        intermediate_frequency_f = intermediate_frequency[snapshot_idx_vec_f]
+
     # Generate carrier wave replicas
     carrier_vec = np.exp(np.complex64(1j * 2.0 * np.pi / sampling_frequency)
-                         * np.array([(intermediate_frequency + doppler_vec)],
+                         * np.array([(intermediate_frequency_f + doppler_vec)],
                                     dtype=np.float32).T
                          @ np.array([sample_idx], dtype=np.float32))
 
