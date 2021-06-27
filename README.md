@@ -4,7 +4,7 @@ Author: *Jonas Beuchert*
 
 This repository contains a Python script and additional open-source code to reproduce the results that are presented in
 
-> Jonas Beuchert and Alex Rogers. 2021. SnapperGPS: Algorithms for Energy-Efficient Low-Cost Location Estimation Using GNSS Signal Snapshots. In SenSys ’21: ACM Conference on Embedded Networked Sensor Systems, November, 2021, Coimbra, Portugal. ACM, New York, NY, USA, 13 pages. (Under review.)
+> _Paper under review._
 
 The script takes raw twelve-millisecond-long time-stamped low-quality GNSS signal snapshots, estimates the locations where they were recorded, and compares the results with the ground truth to obtain performance measures for the proposed algorithms. The first section of this readme describes the setup that is necessary to run the experiments.
 
