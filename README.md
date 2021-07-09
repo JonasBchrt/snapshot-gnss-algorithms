@@ -184,7 +184,7 @@ Other functions in this repository rely on the following packages, which are not
 
 Here are just a bunch of code snippets that demonstrate what some of the utility functions can do.
 
-To localise a receiver on the Earth, you might first want to know where the GNSS satellites are. You can find information such as the satellite orbits, the errors of their on-board clocks, or the state of the ionosphere - which is a layer of the atmosphere that has a significant effect of the GNSS signal propagation speed - in so-called RINEX files. The NASA archives them [here](https://cddis.nasa.gov/archive/). Internally, this code library represents the navigation data as a 2D NumPy array with 21 rows and columns for different satellites as well as different points in time. There are different ways to turn RINEX files into this representation:
+To localise a receiver on the Earth, you might first want to know where the GNSS satellites are. You can find information such as the satellite orbits, the errors of their on-board clocks, or the state of the ionosphere - which is a layer of the atmosphere that has a significant effect of the GNSS signal propagation speed - in so-called RINEX files. The NASA archives them [here](https://cddis.nasa.gov/archive/), another public source is the [BKG](https://igs.bkg.bund.de/). Internally, this code library represents the navigation data as a 2D NumPy array with 21 rows and columns for different satellites as well as different points in time. There are different ways to turn RINEX files into this representation:
 
 ```python
 import eph_util as ep
