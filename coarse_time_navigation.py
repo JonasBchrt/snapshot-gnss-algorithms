@@ -3409,111 +3409,125 @@ def positioning_simplified(snapshot_idx_dict,
                 try:
                     # Get next unexamined combo
                     combo = next(sat_combinations)
-                    # Coarse-time navigation
-                    if ls_mode != 'ransac':
-                        pos, res, hdop = coarse_time_nav_simplified(
-                            code_phases_mod[combo],
-                            prn[combo],
-                            eph[:, combo],
-                            (tow[combo] - time_error)*1e3,
-                            pos_init,
-                            observed_height=observed_heights[snapshot_idx] if observed_heights is not None else None,
-                            code_period_ms=code_period_ms, hdop=True,
-                            no_iterations=3)
-                    else:
-                        # pos, res, _, hdop = coarse_time_nav_ransac(
-                        #     code_phases_mod[combo],
-                        #     prn[combo],
-                        #     eph[:, combo],
-                        #     (tow[combo] - time_error)*1e3,
-                        #     pos_init,
-                        #     observed_height=observed_heights[snapshot_idx] if observed_heights is not None else None,
-                        #     code_period_ms=code_period_ms,
-                        #     tropo=None,
-                        #     inlier_probability=np.exp(reliability[combo]),
-                        #     min_ransac_iterations=1,
-                        #     max_ransac_iterations=3,
-                        #     min_combo_probability=0.0,
-                        #     inlier_threshold=200,
-                        #     min_inliers=None,
-                        #     hdop=True,
-                        #     max_dist=max_dist, max_time=max_time,
-                        #     no_iterations=3)
-                        pos, res, hdop = coarse_time_nav_ransac_simplified(
-                            code_phases_mod[combo],
-                            prn[combo],
-                            eph[:, combo],
-                            (tow[combo] - time_error)*1e3,
-                            pos_init,
-                            observed_height=observed_heights[snapshot_idx] if observed_heights is not None else None,
-                            code_period_ms=code_period_ms,
-                            inlier_probability=np.exp(reliability[combo]),
-                            min_ransac_iterations=1,
-                            max_ransac_iterations=3,
-                            min_combo_probability=0.0,
-                            inlier_threshold=200,
-                            min_inliers=None,
-                            hdop=True,
-                            no_iterations=3)
-                    if np.isnan(hdop):
+                    try:
+                        # Coarse-time navigation
+                        if ls_mode != 'ransac':
+                            pos, res, hdop = coarse_time_nav_simplified(
+                                code_phases_mod[combo],
+                                prn[combo],
+                                eph[:, combo],
+                                (tow[combo] - time_error)*1e3,
+                                pos_init,
+                                observed_height=observed_heights[snapshot_idx] if observed_heights is not None else None,
+                                code_period_ms=code_period_ms, hdop=True,
+                                no_iterations=3)
+                        else:
+                            # pos, res, _, hdop = coarse_time_nav_ransac(
+                            #     code_phases_mod[combo],
+                            #     prn[combo],
+                            #     eph[:, combo],
+                            #     (tow[combo] - time_error)*1e3,
+                            #     pos_init,
+                            #     observed_height=observed_heights[snapshot_idx] if observed_heights is not None else None,
+                            #     code_period_ms=code_period_ms,
+                            #     tropo=None,
+                            #     inlier_probability=np.exp(reliability[combo]),
+                            #     min_ransac_iterations=1,
+                            #     max_ransac_iterations=3,
+                            #     min_combo_probability=0.0,
+                            #     inlier_threshold=200,
+                            #     min_inliers=None,
+                            #     hdop=True,
+                            #     max_dist=max_dist, max_time=max_time,
+                            #     no_iterations=3)
+                            pos, res, hdop = coarse_time_nav_ransac_simplified(
+                                code_phases_mod[combo],
+                                prn[combo],
+                                eph[:, combo],
+                                (tow[combo] - time_error)*1e3,
+                                pos_init,
+                                observed_height=observed_heights[snapshot_idx] if observed_heights is not None else None,
+                                code_period_ms=code_period_ms,
+                                inlier_probability=np.exp(reliability[combo]),
+                                min_ransac_iterations=1,
+                                max_ransac_iterations=3,
+                                min_combo_probability=0.0,
+                                inlier_threshold=200,
+                                min_inliers=None,
+                                hdop=True,
+                                no_iterations=3)
+                        if np.isnan(hdop):
+                            hdop = np.inf
+                        # Check plausibility of solution by checking pseudorange
+                        # residuals and distance to last plausible solution
+                        if (ls_mode == 'ransac' or np.all(np.abs(res) < 200)) \
+                            and np.linalg.norm(pos[:3] - pos_init) < max_dist*(1+n_failed) \
+                                and np.abs(pos[-1]) < max_time*(1+n_failed):
+                            plausible_solution = True
+                    except ValueError:
+                        print("CTN failed due to value error.")
                         hdop = np.inf
-                    # Check plausibility of solution by checking pseudorange
-                    # residuals and distance to last plausible solution
-                    if (ls_mode == 'ransac' or np.all(np.abs(res) < 200)) \
-                        and np.linalg.norm(pos[:3] - pos_init) < max_dist*(1+n_failed) \
-                            and np.abs(pos[-1]) < max_time*(1+n_failed):
-                        plausible_solution = True
 
                 except StopIteration:
                     # Exhausted all combos
                     iterator_empty = True
 
         if mle and (ls_mode is None or hdop * 20.0 > 200.0 or not plausible_solution):
-            # Coarse-time navigation by gradient-based pseudo-likelihood optimization
-            pos, useful = coarse_time_nav_mle(
-                init_pos=pos_init,
-                init_time=[
-                    time[gnss][snapshot_idx]-time_error
-                    for gnss in gnss_list
-                    ],
-                code_phase=[
-                    code_phase_dict[gnss][snapshot_idx_dict[gnss] == snapshot_idx]
-                    for gnss in gnss_list
-                    ],
-                vis=[
-                    prn_dict[gnss][snapshot_idx_dict[gnss] == snapshot_idx]
-                    for gnss in gnss_list
-                    ],
-                eph=[
-                    eph_dict[gnss][:, snapshot_idx_dict[gnss] == snapshot_idx]
-                    for gnss in gnss_list
-                    ],
-                peak_height=[
-                    snr_dict[gnss][snapshot_idx_dict[gnss] == snapshot_idx]
-                    for gnss in gnss_list
-                    ],
-                observed_height=observed_heights[snapshot_idx] if observed_heights is not None else np.nan,
-                code_period=np.array([
-                    {'G': 1e-3, 'S': 1e-3, 'E': 4e-3, 'C': 10e-3}[gnss]
-                    for gnss in gnss_list
-                    ]),
-                search_space_pos=np.array([20.0e3, 20.0e3, 0.2e3]),
-                search_space_time=search_space_time,
-                hard_constraint=False,
-                linear_pr_prediction=True,
-                trop=False, iono=False,
-                time_out=2, optim_opt=0,
-                std=2.0**np.arange(5, -7, -2) * 8.3333e-07
-                )
 
-            # Calculate HDOP
-            # Get indices of useful PRNs
-            useful_idx = np.concatenate([
-                np.in1d(
-                    prn_dict[gnss][snapshot_idx_dict[gnss] == snapshot_idx],
-                    useful[gnss_idx]
-                    ) for gnss_idx, gnss in enumerate(gnss_list)
-                ])
+            try:
+
+                # Coarse-time navigation by gradient-based pseudo-likelihood optimization
+                pos, useful = coarse_time_nav_mle(
+                    init_pos=pos_init,
+                    init_time=[
+                        time[gnss][snapshot_idx]-time_error
+                        for gnss in gnss_list
+                        ],
+                    code_phase=[
+                        code_phase_dict[gnss][snapshot_idx_dict[gnss] == snapshot_idx]
+                        for gnss in gnss_list
+                        ],
+                    vis=[
+                        prn_dict[gnss][snapshot_idx_dict[gnss] == snapshot_idx]
+                        for gnss in gnss_list
+                        ],
+                    eph=[
+                        eph_dict[gnss][:, snapshot_idx_dict[gnss] == snapshot_idx]
+                        for gnss in gnss_list
+                        ],
+                    peak_height=[
+                        snr_dict[gnss][snapshot_idx_dict[gnss] == snapshot_idx]
+                        for gnss in gnss_list
+                        ],
+                    observed_height=observed_heights[snapshot_idx] if observed_heights is not None else np.nan,
+                    code_period=np.array([
+                        {'G': 1e-3, 'S': 1e-3, 'E': 4e-3, 'C': 10e-3}[gnss]
+                        for gnss in gnss_list
+                        ]),
+                    search_space_pos=np.array([20.0e3, 20.0e3, 0.2e3]),
+                    search_space_time=search_space_time,
+                    hard_constraint=False,
+                    linear_pr_prediction=True,
+                    trop=False, iono=False,
+                    time_out=2, optim_opt=0,
+                    std=2.0**np.arange(5, -7, -2) * 8.3333e-07
+                    )
+
+                # Calculate HDOP
+                # Get indices of useful PRNs
+                useful_idx = np.concatenate([
+                    np.in1d(
+                        prn_dict[gnss][snapshot_idx_dict[gnss] == snapshot_idx],
+                        useful[gnss_idx]
+                        ) for gnss_idx, gnss in enumerate(gnss_list)
+                    ])
+
+            except ValueError:
+
+                print("MLE failed due to value error.")
+
+                useful_idx = np.array([])
+
             if np.any(useful_idx):
                 # Use only satellites that are considered useful by MLE to
                 # calculate HDOP
@@ -3546,7 +3560,7 @@ def positioning_simplified(snapshot_idx_dict,
             latitude_vec[snapshot_idx] = latitude_init
             longitude_vec[snapshot_idx] = longitude_init
             # Extract coarse-time error, remember it for next snapshot
-            time_error = pos[-1]
+            time_error += pos[-1]
             time_error_vec[snapshot_idx] = time_error
             # Estimate uncertainty from measurement uncertainty and HDOP
             uncertainty_vec[snapshot_idx] = 20.0 * hdop
