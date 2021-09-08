@@ -3471,6 +3471,7 @@ def positioning_simplified(snapshot_idx_dict,
                 except StopIteration:
                     # Exhausted all combos
                     iterator_empty = True
+                    hdop = np.inf
 
         if mle and (ls_mode is None or hdop * 20.0 > 200.0 or not plausible_solution):
 
