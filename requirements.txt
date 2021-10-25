@@ -3,4 +3,4 @@ numpy
 pymap3d
 scipy
 Shapely
-sklearn
+sklearn==0.24.0
