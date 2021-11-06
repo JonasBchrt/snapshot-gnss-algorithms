@@ -3,4 +3,4 @@ numpy
 pymap3d
 scipy
 Shapely
-scikit-learn==0.24.0
+scikit-learn == 0.24.0
