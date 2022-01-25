@@ -863,7 +863,7 @@ def cold_snapshot(c, d, t_min, t_max, eph, PRN, init_pos=np.zeros(3)):
             # Store coarse time
             tOpt = t + X[4]
 
-        return Xopt, resOpt, tOpt
+    return Xopt, resOpt, tOpt
 
 
 def warm_start_acquisition(data, interm_freq, sampling_freq, init_pos,
