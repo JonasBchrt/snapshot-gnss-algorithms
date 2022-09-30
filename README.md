@@ -226,7 +226,7 @@ Each GNSS satellite broadcasts a unique code that allows a receiver to identify 
 
 Finally, `eph_util.get_elevation` is there to work with different elevation models and geoids and `eph_util.get_relative_height_from_pressure` helps you to include pressure measurements into position estimation.
 
-# Funding statment
+## Funding statment
 
 SnapperGPS was supported by an EPSRC IAA Technology Fund.
 
