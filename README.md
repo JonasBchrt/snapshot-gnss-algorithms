@@ -225,3 +225,9 @@ The troposphere and the ionosphere are two layers of the atmosphere that have a 
 Each GNSS satellite broadcasts a unique code that allows a receiver to identify it in the captured data. (Except for GLONASS satellites, which all broadcast the same code in the L1 frequency band, but with slightly different carrier frequencies.) There are functions that generate the codes that are broadcasted in the L1/E1/B1C/L1C bands, namely `eph_util.generate_ca_code` for GPS L1 and SBAS, `eph_util.generate_e1_code` for Galileo E1, where `eph_util.e1b` and `eph_util.e1c` are responsible for the individual channels, `eph_util.generate_b1c_code` for BeiDou B1C with `eph_util.b1c_data` and `b1c_pilot` for the channels, `eph_util.generate_l1c_code` for GPS L1C based on `eph_util.l1c_data` and `eph_util.l1c_pilot`, and `eph_util.generate_ca_code_glonass` for GLONASS L1. ALternatively, you can read the already generated from files using the class `CodeDB` or even codes that are already pre-sampled at SnapperGPS' sampling frequency 4.092 MHz from `.npy` files: `codes_G.npy` for GPS L1, `codes_E.npy` for Galileo E1, and `codes_C.npy` for BeiDou B1C.
 
 Finally, `eph_util.get_elevation` is there to work with different elevation models and geoids and `eph_util.get_relative_height_from_pressure` helps you to include pressure measurements into position estimation.
+
+# Funding statment
+
+SnapperGPS was supported by an EPSRC IAA Technology Fund.
+
+Additionally, Jonas Beuchert is supported by the EPSRC Centre for Doctoral Training in Autonomous Intelligent Machines and Systems.
