@@ -6,7 +6,7 @@ title: >-
 message: >-
   If you use this software for your research, please
   consider citing our publication.
-type: software
+type: inproceedings
 authors:
   - given-names: Jonas
     family-names: Beuchert
