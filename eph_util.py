@@ -2640,7 +2640,7 @@ def acquisition(longsignal, IF, Fs, freq_step=500,
                                            max_samp])]
             # Zero-pad signal chunk to same length as code
             extended_signal = np.concatenate((extended_signal, rawsignal,
-                                              np.zeros(sample)))
+                                              np.zeros(sample - np.ndarray.size(rawsignal))))
             idx = idx + 1
         longsignal = extended_signal
         # Number of code sequences
